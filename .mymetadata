@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="qhdPayment"
+  id="myeclipse.1363312428791"
+  context-root="/qhdPayment"
+  j2ee-spec="5.0"
+  archive="qhdPayment.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+

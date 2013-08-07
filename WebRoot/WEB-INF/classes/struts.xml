@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<!-- 设置Struts2.1的Action默认后缀为.action与.do -->
+	<constant name="struts.action.extension" value="action,do" />
+	<!-- 设置Web应用的默认编码集为gbk -->
+	<constant name="struts.i18n.encoding" value="gbk" />
+	<!-- 设置Web应用的默认Locale为zh_CN -->
+	<constant name="struts.locale" value="zh_CN" />
+	<!-- 设置Struts2.1应用的国际化资源文件，多个文件中间可用逗号分隔 -->
+	<constant name="struts.custom.i18n.resources" value="messageResource" />
+	<!-- 设置Struts2.1默认的ObjectFactory为spring -->
+	<constant name="struts.objectFactory" value="spring" />
+	<!-- 设置Struts2.1应用是否处于开发模式，通常在开发调试阶段设为true,正式上线后可设为false -->
+	<constant name="struts.devMode" value="false" />
+	<!-- 设置Struts2.1允许态方法调用 -->
+	<constant name="struts.enable.DynamicMethodInvocation" value="true" />
+	<!-- 设置Struts2.1的默认主题为simple -->
+	<constant name="struts.ui.theme" value="simple" />
+
+	<package name="qhdPayment" extends="struts-default">
+	    <!-- 配置自定义拦截器LoginedCheckInterceptor -->
+		<interceptors>
+			<interceptor name="loginedCheck" class="com.jyyr.strtus.interceptor.LoginedCheckInterceptor"/>
+		</interceptors>	
+		<!-- 定义全局result -->
+		<global-results>
+			<!-- 定义名为exception的全局result -->
+			<result name="exception">/exception.jsp</result>
+		</global-results>
+
+		<!-- 定义全局异常映射 -->
+		<global-exception-mappings>
+			<!-- 捕捉到Exception异常(所有异常)时跳转到exception所命名的视图上 -->
+			<exception-mapping exception="java.lang.Exception"
+				result="exception" />
+		</global-exception-mappings>
+
+		<!-- 所有的业务控制器Action配置均通过Struts2.1的注解实现 -->
+
+	</package>
+	<package name="webs" extends="qhdPayment">
+		<!-- 配置注册会员管理的MemberAction映射 -->
+		<action name="entry" class="tbBasicInfoMAction" method="entry">
+			<interceptor-ref name="createSession" />
+			<interceptor-ref name="defaultStack" />
+			<result>
+				/TbBasicInfoM/basicInfoList.jsp
+			</result>
+			<result name="FAIL">
+				/TbBasicInfoM/error.jsp
+			</result>
+		</action>
+		<action name="delUser" class="tbBasicInfoMAction" method="delUser">
+			<result name="delUser">/TbBasicInfoM/basicInfoList.jsp</result>
+		</action>
+		<action name="updateAndAddUser" class="tbBasicInfoMAction"
+			method="updateAndAddUser">
+			<result name="updateAndAddUser">/TbBasicInfoM/basicInfoList.jsp</result>
+		</action>
+		<action name="addTbBasicInfoM" class="tbBasicInfoMAction"
+			method="addTbBasicInfoM">
+			<result name="addTbBasicInfoM">/TbBasicInfoM/basicInfoList.jsp</result>
+		</action>
+		<action name="importUser" class="tbBasicInfoMAction" method="importUser">
+			<result name="importUser">/TbBasicInfoM/basicInfoList.jsp</result>
+		</action>
+		<action name="exportUser" class="tbBasicInfoMAction" method="exportUser">
+			<result name="exportUser" type="stream">
+				<!-- /TbBasicInfoM/basicInfoList.jsp -->
+				<param name="inputName">downloadFile</param>
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${fileName}"</param>
+				<param name="bufferSize">2048</param>
+			</result>
+		</action>
+		
+		<action name="entryStatisInfoD"  class="tbCountyDevCntStatisInfoDAction" method="entryStatisInfoD">
+		   <result>/TbBasicInfoM/cityMangerD.jsp</result>
+		</action>
+		<action name="browserCityTop10" class="cityTop10Action" method="browserCityTop10">
+			
+			<result>/TbBasicInfoM/cityMangerD.jsp</result>
+			<interceptor-ref name="createSession" />
+			<interceptor-ref name="defaultStack" />		 
+		</action>
+		<action name="line" class="linechartAction" method="line">
+			
+			<result>/TbBasicInfoM/linechart.jsp</result>
+			<interceptor-ref name="createSession" />
+			<interceptor-ref name="defaultStack" />		 
+		</action>
+		<action name="pie" class="piechartAction" method="pie">
+			
+			<result>/TbBasicInfoM/piechart.jsp</result>
+			<interceptor-ref name="createSession" />
+			<interceptor-ref name="defaultStack" />		 
+		</action>
+		
+		
+		<action name="execute1" class="channelAction" method="execute1">
+			<result>/TbChnlIinfoMService/TbChnlIinfo.jsp</result>
+		</action>
+		 <action name="delchnl" class="channelAction" method="delchnl">
+			<interceptor-ref name="createSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result name="DEL">/TbChnlIinfoMService/TbChnlIinfo.jsp</result>
+		</action>
+		<action name="Updatechnl" class="channelAction" method="Updatechnl">
+			<interceptor-ref name="createSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result name="UPD">/TbChnlIinfoMService/TbChnlIinfo.jsp</result>
+		</action>
+		<action name="exportChanel" class="channelAction" method="exportChanel">
+			<result name="exportChanel" type="stream">
+				<!-- /TbBasicInfoM/basicInfoList.jsp -->
+				<param name="inputName">downloadFile</param>
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${fileName}"</param>
+				<param name="bufferSize">2048</param>
+			</result>
+		</action>
+		<action name="importChanel" class="channelAction" method="importChanel">
+			<result name="importChanel">/TbChnlIinfoMService/TbChnlIinfo.jsp</result>
+		</action>
+		<action name="execute" class="coffcntInfoAction" method="execute">
+			<result>/TbAccomdCoffcntLinfoMService/user.jsp</result>
+			<result name="FAIL">
+				/TbBasicInfoM/error.jsp
+			</result>
+		</action>
+		<action name="Updatercd" class="coffcntInfoAction" method="Updatercd">
+			<interceptor-ref name="createSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result name="UPD">/TbAccomdCoffcntLinfoMService/user.jsp</result>
+		</action>
+		<action name="delrecd" class="coffcntInfoAction" method="delrecd">
+			<interceptor-ref name="createSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result name="DEL">/TbAccomdCoffcntLinfoMService/user.jsp</result>
+		</action>
+         <action name="export" method="getDownloadFileJ" class="coffcntInfoAction">
+            <result name="success" type="stream">
+                <param name="inputName">
+                    downloadFile
+                </param>
+                <param name="contentType">
+                    ${contentType}
+                </param>
+                <param name="contentDisposition">
+                    attachment;filename="${fileName}"
+                </param>
+                <param name="bufferSize">
+                    2048
+                </param>
+            </result>
+        </action>
+
+	</package>
+	<package name="bps" extends="json-default">
+		<action name="browseTbBasicInfoM" class="tbBasicInfoMAction"
+			method="browseTbBasicInfoM">
+			<interceptor-ref name="createSession" />
+			<interceptor-ref name="defaultStack" />
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action>
+		<action name="searchUser" class="tbBasicInfoMAction" method="searchUser">
+			<interceptor-ref name="createSession" />
+			<interceptor-ref name="defaultStack" />
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action>
+		<action name="county" class="tbBasicInfoMAction" method="county">
+			<interceptor-ref name="createSession" />
+			<interceptor-ref name="defaultStack" />
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action>
+		<action name="area" class="tbBasicInfoMAction" method="area">
+			<interceptor-ref name="createSession" />
+			<interceptor-ref name="defaultStack" />
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action>
+		
+		<action name="browserStatisInfoD" class="tbCountyDevCntStatisInfoDAction" method="browserStatisInfoD">
+			<interceptor-ref name="createSession" />
+			<interceptor-ref name="defaultStack" />
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action>
+		<action name="setJsonArea" class="coffcntInfoAction" method="setJsonArea">
+			<interceptor-ref name="createSession" />
+			<interceptor-ref name="defaultStack" />
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action> 
+		
+		<action name="setJson" class="coffcntInfoAction" method="setJson">
+			<interceptor-ref name="createSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action>
+		<action name="setJson1" class="coffcntInfoAction" method="setJson1">
+			<interceptor-ref name="createSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action>	
+		<action name="makeJson" class="channelAction" method="makeJson">
+			<interceptor-ref name="createSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+		</action>
+		<action name="makeJson1" class="channelAction" method="makeJson1">
+			<interceptor-ref name="createSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action>
+		<action name="makeJson2" class="channelAction" method="makeJson2">
+			<interceptor-ref name="createSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action>
+		<action name="makeJson3" class="channelAction" method="makeJson3">
+			<interceptor-ref name="createSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action>
+		<action name="makeJson4" class="channelAction" method="makeJson4">
+			<interceptor-ref name="createSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action>	
+		<action name="findnt" class="channelAction" method="findnt">
+			<interceptor-ref name="createSession"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+		</action>
+	</package>
+	 <!-- 董晓斌__计件目录配置 -->
+	 <package name="piecePro" extends="json-default">
+        <action name="TbReckonPieceContentInfoMServiceGetData" class="PieceContent" method="getPieceContentM">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+            <result type="json">
+                <param name="root">
+                    jsonObjectFinal
+                </param>
+            </result>
+        </action>
+        <action name="browerMangerdetail" class="tbMangerMonthBigClassCountsAction" method="browerMagerDetail">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal</param>
+			</result>
+	    </action>
+	    <!-- 计件分项月统计 -->
+	   <action name="browMonthPiect" class="tBMangerPieceSmallAction" method="browMonthPiect">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	    <!-- 计件分项日统计 -->
+	    <action name="browDayPiect" class="tBMangerPieceSmallDayAction" method="browDayPiect">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	    <action name="makecountys" class="tBMangerPieceSmallAction" method="makecountys">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	     <action name="makenames" class="tBMangerPieceSmallAction" method="makenames">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	     <action name="makebigpiece" class="tBMangerPieceSmallAction" method="makebigpiece">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	     <action name="makesmallpiece" class="tBMangerPieceSmallAction" method="makesmallpiece">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	     <action name="findchinlname" class="tBMangerPieceSmallAction" method="findchinlname">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	      <action name="findchinlid" class="tBMangerPieceSmallAction" method="findchinlid">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	     <action name="makecountysday" class="tBMangerPieceSmallDayAction" method="makecountysday">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	     <action name="makenamesday" class="tBMangerPieceSmallDayAction" method="makenamesday">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	     <action name="makebigpieceD" class="tBMangerPieceSmallDayAction" method="makebigpieceD">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	     <action name="makesmallpieceD" class="tBMangerPieceSmallDayAction" method="makesmallpieceD">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	    <action name="findchinlnameD" class="tBMangerPieceSmallDayAction" method="findchinlnameD">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+	    <action name="findchinlidD" class="tBMangerPieceSmallDayAction" method="findchinlidD">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+			<result type="json">
+				<param name="root">jsonObjectFinal1</param>
+			</result>
+	    </action>
+    </package>
+    <package name="piece" extends="qhdPayment">
+        <action name="myPieceContent" class="PieceContent" method="execute">
+            <interceptor-ref name="createSession"/>
+            <interceptor-ref name="defaultStack"/>
+            <result>
+                /content/piece.jsp
+            </result>
+        </action>
+        <action name="DeleteTbReckonPieceContentInfoMActionAction" class="PieceContent" method="deletePiece">
+            <result name="SUCCESS">
+                /content/piece.jsp
+            </result>
+        </action>
+        <action name="UpdateTbReckonPieceContentInfoMActionAction" class="PieceContent" method="addPieceContent">
+            <result name="SUCCESS">
+                /content/piece.jsp
+            </result>
+        </action>
+        <!-- 董晓斌__计件目录导出 -->
+        <action name="exJiJianExcel" method="getDownloadFileJ" class="PieceContent">
+            <result name="success" type="stream">
+                <param name="inputName">
+                    downloadFile
+                </param>
+                <param name="contentType">
+                    ${contentType}
+                </param>
+                <param name="contentDisposition">
+                    attachment;filename="${fileName}"
+                </param>
+                <param name="bufferSize">
+                    2048
+                </param>
+            </result>
+        </action>
+        <!-- 董晓斌__计件目录导入 -->
+        <action name="ImportTbReckonPieceContentInfoMActionAction" method="imPortPieceContent" class="PieceContent">
+            <result name="SUCCESS">
+                /content/piece.jsp
+            </result>
+        </action>
+ <!-- ywz  begin -->       
+        <action name="chnlMagerDayCounts" class="reckonPieceAction" method="chnlMagerDayCounts">
+			<result>/chanlMemberIndex.jsp</result>
+			<interceptor-ref name="defaultStack"/>
+		</action>
+		<action name="pieceDetailInfo" class="reckonPieceAction" method="pieceDetailInfo">
+			<result>/chanlMemberIndex.jsp</result>
+			<interceptor-ref name="defaultStack"/>
+		</action>
+		<action name="browTd" class="reckonPieceAction" method="browTd">
+			<result>/chanlMemberIndex.jsp</result>
+			<interceptor-ref name="defaultStack"/>
+		</action>
+		<!-- 渠道经理月统计折线图 -->
+		<action name="loadTbMonthLineChart" class="tbMonthLineChartAction" method="loadTbMonthLineChart">
+			<result>/chanlMemberIndex.jsp</result>
+			<interceptor-ref name="loginedCheck"/>
+			<interceptor-ref name="defaultStack"/>
+		</action>
+		
+		<!-- 渠道经理首页统计 -->
+		<action name="magerIndexAction" class="tbMangerMonthBigClassCountsAction" method="magerIndexStati">
+			<result>/TbMangerMonthBigClassCounts.jsp</result>
+			<interceptor-ref name="defaultStack"/>
+		</action>
+		<!-- 渠道经理日统计 -->		 
+		<action name="magerIndexStati_Action" class="tbMangerMonthBigClassCountsAction" method="magerIndexStati">
+			<result>/TbMangerMonthBigClassCounts.jsp</result>
+			<interceptor-ref name="defaultStack"/>
+		</action>	
+		
+		<!-- 
+		<action name="*_Action" class="tbMangerMonthBigClassCountsAction" method="{1}">
+			<result>/TbMangerMonthBigClassCounts.jsp</result>
+			<interceptor-ref name="defaultStack"/>
+		</action>
+		-->
+		<!-- 导出渠道经理月详细信息 -->
+		<action name="exportChnlDetail" class="tbMangerMonthBigClassCountsAction" method="exportChnlDetail">
+			<result name="downLoad" type="stream">
+				<!-- /TbBasicInfoM/basicInfoList.jsp -->
+				<param name="inputName">downloadFile</param>
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${fileName}"</param>
+				<param name="bufferSize">2048</param>
+			</result>
+			<interceptor-ref name="defaultStack"/>
+		</action>	
+		<!-- 计件分项月详细信息 -->
+		<action name="exportMonthPiece" class="tBMangerPieceSmallAction" method="exportMonthPiece">
+			<result name="monthDownLoad" type="stream">
+				<!-- /TbBasicInfoM/basicInfoList.jsp -->
+				<param name="inputName">downloadFile</param>
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${fileName}"</param>
+				<param name="bufferSize">2048</param>
+			</result>
+			<interceptor-ref name="defaultStack"/>
+		</action>		
+		<action name="exportDayPiece" class="tBMangerPieceSmallDayAction" method="exportDayPiece">
+			<result name="monthDownLoad" type="stream">
+				<!-- /TbBasicInfoM/basicInfoList.jsp -->
+				<param name="inputName">downloadFile</param>
+				<param name="contentType">${contentType}</param>
+				<param name="contentDisposition">attachment;filename="${fileName}"</param>
+				<param name="bufferSize">2048</param>
+			</result>
+			<interceptor-ref name="defaultStack"/>
+		</action>
+		<!--计件分项月统一Url  -->
+		<action name="pieceUrl" class="tBMangerPieceSmallAction" method="pieceUrl">
+			<result>/mangerpiecesmall.jsp</result>
+			<interceptor-ref name="defaultStack"/>
+		</action>	
+		<!--计件分项日统一Url  -->
+		<action name="pieceUrlday" class="tBMangerPieceSmallDayAction" method="pieceUrlday">
+			<result>/mangerpiecesmallDay.jsp</result>
+			<interceptor-ref name="defaultStack"/>
+		</action>
+		<!-- 首页根据权限跳转 -->
+		<action name="index_Action" class="firstindexAction">
+			<!-- 渠道经理权限 -->
+			<result name="chnlmager" type="redirectAction">
+				<param name="actionName">magerIndexStati_Action</param>  
+                <param name="staticId">${staticId}</param> 	
+                <param name="roleName">${roleName}</param> 
+                <param name="userName">${userName}</param> 
+                <param name="regionId">${regionId}</param> 
+                <param name="regionName">${regionName}</param> 		
+			</result>	
+			<!-- 区县负责人权限 -->	
+			<result name="countymager"  type="redirectAction">
+				<param name="actionName">countyStatis_countyAction</param>  
+                <param name="staticId">${staticId}</param> 
+                <param name="roleName">${roleName}</param> 
+                <param name="userName">${userName}</param> 
+                <param name="regionId">${regionId}</param> 
+                <param name="regionName">${regionName}</param>
+            </result>	
+            <!-- 市负责人权限 -->
+			<result name="citymager"  type="redirectAction">
+				<param name="actionName">browserCityTop10</param>  
+                <param name="userId">${staticId}</param> 
+                <param name="roleName">${roleName}</param> 
+                <param name="userName">${userName}</param> 
+                <param name="regionId">${regionId}</param> 
+                <param name="regionName">${regionName}</param>
+			</result>
+			<!-- 超级管理员权限 -->
+			<result name="supermager"  type="redirectAction">
+				<param name="actionName">browserCityTop10</param>  
+                <param name="userId">${staticId}</param> 
+                <param name="roleName">${roleName}</param> 
+                <param name="userName">${userName}</param> 
+                <param name="regionId">${regionId}</param> 
+                <param name="regionName">${regionName}</param>
+			</result>
+			<result>/noinfo.jsp</result>
+			<interceptor-ref name="defaultStack"/>
+			<result name="login">/noexist.jsp</result>
+			
+		</action>
+        <!-- 区县负责人日统计 -->
+        <action name="*_countyAction" class="countyIndexStatiAction" method="{1}">
+			<result>/TbCountyIndex.jsp</result>			
+			<interceptor-ref name="defaultStack"/>
+		</action>
+ <!-- ywz  end -->             
+    </package>
+    
+</struts>    

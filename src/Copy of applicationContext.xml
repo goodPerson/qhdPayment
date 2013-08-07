@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<!-- 定义使用C3P0连接池的数据源com.mchange.v2.c3p0.ComboPooledDataSource -->
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<!-- 指定连接数据库的JDBC驱动 -->
+	<!--	<property name="driverClass"><value>com.ibm.db2.jcc.DB2Driver</value></property> -->
+		<!-- 连接数据库所用的URL -->
+	<!--	<property name="jdbcUrl"><value>jdbc:db2://127.0.0.1:50000/TEST</value></property> -->
+		<!-- 连接数据库的用户名 -->
+	<!--	<property name="user"><value>db2admin</value></property>-->
+		<!-- 连接数据库的密码 -->
+	<!--	<property name="password"><value>123</value></property>-->
+	
+		<!-- 设置数据库连接池的最大连接数 -->
+		<property name="maxPoolSize">
+			<value>20</value>
+		</property>
+		<!-- 设置数据库连接池的最小连接数 -->
+		<property name="minPoolSize">
+			<value>2</value>
+		</property>
+		<!-- 设置数据库连接池的初始化连接数 -->
+		<property name="initialPoolSize">
+			<value>2</value>
+		</property>
+		<!-- 设置数据库连接池的连接的最大空闲时间,单位为秒 -->
+		<property name="maxIdleTime">
+			<value>20</value>
+		</property>
+	</bean>
+
+	<!-- 定义Hibernate的SessionFactory -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<!-- 依赖注入上面定义的数据源dataSource -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- 注册Hibernate的ORM映射文件 -->
+		<property name="annotatedClasses">
+			<list>	
+			    <value>com.jyyr.orm.TbAccomdCoffcntLinfoM</value>
+		        <value>com.jyyr.orm.TbBasicInfoM</value>
+		        <value>com.jyyr.orm.TbChnlIinfoM</value>
+		        <value>com.jyyr.orm.TbReckonPieceContentInfoM</value>
+		        <value>com.jyyr.orm.TbBenchmarkScoreInfoM</value>
+		        <value>com.jyyr.orm.TbReckonPiecePayDealInfoD</value>
+		        <value>com.jyyr.orm.TbMagerDayCounts</value>
+		        <value>com.jyyr.orm.TbMangerMonthBigClassCounts</value>
+		        <value>com.jyyr.orm.TbMonthLineChart</value>
+		        <value>com.jyyr.orm.TbDayCountsDetail</value>		        
+		        <value>com.jyyr.orm.TbCountyDevCntStatisInfoD</value>
+		        <value>com.jyyr.orm.TbChnlMagrScoreTop10M</value>
+		        <value>com.jyyr.orm.TbChnlMagrScoreDesc10M</value>
+		        <value>com.jyyr.orm.TbCityMonDevScoreInfoM</value>
+		        <value>com.jyyr.orm.TbCityMonDevScorePayInfoMon</value>
+		        <value>com.jyyr.orm.TbCityPieceMClsInfoM</value>
+		        <value>com.jyyr.orm.TbCountyServCntInfoD</value>
+		        <value>com.jyyr.orm.TbDimChnlMagrChnlM</value>
+		        <value>com.jyyr.orm.TbCountryCntDay</value>
+		        <value>com.jyyr.orm.TbCountryCountsMonth</value>		
+		        <value>com.jyyr.orm.TbCountyStaticMonth</value>      
+		        <value>com.jyyr.orm.TbCountryTopDay</value>
+		        <value>com.jyyr.orm.TbCountryChnlDescDay</value>    
+			</list>
+		</property>
+		<!-- 设置Hibernate的相关属性 -->
+		<property name="hibernateProperties">
+			<props>
+				<!-- 设置Hibernate的数据库方言为MySQL5Dialect
+				<prop key="hibernate.dialect">org.hibernate.dialect.DB2Dialect</prop>
+				 -->
+				<!-- 设置Hibernate是否在控制台输出SQL语句，开发调试阶段通常设为true -->
+				<prop key="show_sql">true</prop>
+				<!-- 设置Hibernate一个提交批次中的最大SQL语句数 -->
+				<prop key="hibernate.jdbc.batch_size">50</prop>
+				<prop key="show_sql">50</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- 装配HibernateTemplate实例 -->
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<constructor-arg ref="sessionFactory" />
+	</bean>
+
+	<!--定义Hibernate的事务管理器HibernateTransactionManager -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<!-- 依赖注入上面定义的sessionFactory -->
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- 配置事务的传播特性 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="Update*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="del*" propagation="REQUIRED" />
+			<tx:method name="find*" propagation="REQUIRED" />
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="imp*" propagation="REQUIRED" />
+			<tx:method name="*" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- 指定哪些类的哪些方法参与事务管理 -->
+	<aop:config>
+		<aop:pointcut id="allServiceMethod"
+			expression="execution(* com.jyyr.service.impl.*.*(..))" />
+		<aop:advisor pointcut-ref="allServiceMethod" advice-ref="txAdvice" />
+	</aop:config>
+
+	<!-- 开启Spring的Annotation注解处理器 -->
+	<context:annotation-config />
+
+	<!-- 开启Spring的Bean自动扫描机制来查找与管理Bean实例 -->
+
+
+	<!-- 装配通用数据库访问类BaseDAOImpl -->
+	<bean id="dao" class="com.jyyr.dao.BaseDAOImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+	<bean id="tbBasicInfoMService" class="com.jyyr.service.impl.TbBasicInfoMServiceImpl">
+		<property name="dao" ref="dao" />
+	</bean>
+	<bean id="tbCountyDevCntStatisInfoDService" class="com.jyyr.service.impl.TbCountyDevCntStatisInfoDServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+    <bean id="cityTop10Service" class="com.jyyr.service.impl.CityTop10ServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+	<bean id="cityDesc10Service" class="com.jyyr.service.impl.CityDesc10ServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+	<bean id="tbCityMonDevScoreInfoMService" class="com.jyyr.service.impl.TbCityMonDevScoreInfoMServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+	
+	 <!-- 部署调节系数信息逻辑组件TbAccomdCoffcntLinfoMServiceImpl --> 
+	<bean id="tbAccomdCoffcntLinfoMService" class="com.jyyr.service.impl.TbAccomdCoffcntLinfoMServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+	<bean id="tbBasicInfoMAction" class="com.jyyr.strtus.action.TbBasicInfoMAction"
+		scope="prototype">
+		<property name="service" ref="tbBasicInfoMService"></property>
+	</bean>
+	<bean id="tbCountyDevCntStatisInfoDAction" class="com.jyyr.strtus.action.TbCountyDevCntStatisInfoDAction"
+		scope="prototype">
+		<property name="tbCountyDevCntStatisInfoDService" ref="tbCountyDevCntStatisInfoDService"></property>
+	</bean>
+	<bean id="cityTop10Action" class="com.jyyr.strtus.action.CityTop10Action"
+		scope="prototype">
+		<property name="cityTop10Service" ref="cityTop10Service"></property>
+		<property name="cityDesc10Service" ref="cityDesc10Service"></property>
+		<property name="tbCityMonDevScoreInfoMService" ref="tbCityMonDevScoreInfoMService"></property>
+		<property name="linService" ref="tbCityMonDevScorePayInfoMonService"></property>
+		<property name="pieService" ref="tbCityPieceMClsInfoMService"></property>
+		
+	</bean>
+	<!-- 李亚昆新部分 -->
+	<bean id="tbCityMonDevScorePayInfoMonService" class="com.jyyr.service.impl.TbCityMonDevScorePayInfoMonServiceImpl">
+		<property name="dao" ref="dao" />
+	</bean>
+	<bean id="tbCityPieceMClsInfoMService" class="com.jyyr.service.impl.TbCityPieceMClsInfoMServiceImpl">
+		<property name="dao" ref="dao" />
+	</bean>
+	<bean id="linechartAction" class="com.jyyr.strtus.action.LinechartAction"
+		scope="prototype">
+		<property name="service" ref="tbCityMonDevScorePayInfoMonService"></property>
+	</bean>
+	<bean id="piechartAction" class="com.jyyr.strtus.action.PiechartAction"
+		scope="prototype">
+		<property name="service" ref="tbCityPieceMClsInfoMService"></property>
+	</bean>
+	<bean id="tbChnlIinfoMService" class="com.jyyr.service.impl.TbChnlIinfoMServiceImpl">
+		<property name="dao" ref="dao" />
+	</bean>
+	<bean id="coffcntInfoAction" class="com.jyyr.strtus.action.CoffcntInfoAction" scope="prototype">
+		<property name="Service" ref="tbAccomdCoffcntLinfoMService"/>
+	</bean>
+	<bean id="channelAction" class="com.jyyr.strtus.action.ChannelAction" scope="prototype">
+		<property name="Service" ref="tbChnlIinfoMService"></property>
+	</bean>
+<!-- 董晓斌部分 -->
+	<bean id="tbReckonPieceContentInfoMService"
+		class="com.jyyr.service.impl.TbReckonPieceContentInfoMServiceImpl">
+		<property name="dao" ref="dao" />
+	</bean>
+	<bean id="pieceContent" class="com.jyyr.strtus.action.PieceContentAction"
+		scope="prototype">
+		<property name="tbPieceContent" ref="tbReckonPieceContentInfoMService"></property>
+	</bean>
+	
+<!-- 开始配置业务层 -->
+	
+	<!--  计件明细  TbReckonPiecePayDealInfoDServiceImpl --> 
+	<bean id="tbReckonPiecePayDealInfoDService" class="com.jyyr.service.impl.TbReckonPiecePayDealInfoDServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+	
+	<!--  月折线图  TbReckonPiecePayDealInfoDServiceImpl --> 
+	<bean id="tbMonthLineChartService" class="com.jyyr.service.impl.TbMonthLineChartServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+	
+    <!--   大类业务饼图  TbMangerMonthBigClassCountsServiceImpl --> 
+	<bean id="tbMangerMonthBigClassCountsService" class="com.jyyr.service.impl.TbMangerMonthBigClassCountsServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+	
+	<!--   每月日统计折线图  TbMangerMonthBigClassCountsServiceImpl --> 
+	<bean id="tbDayCountsDetailService" class="com.jyyr.service.impl.TbDayCountsDetailServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+	
+	<!-- 辑组件   每月日统计图标  TbMangerMonthBigClassCountsServiceImpl --> 
+	<bean id="tbMagerDayCountsService" class="com.jyyr.service.impl.TbMagerDayCountsServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+	<!-- 区县负责人日统计 --> 
+	<bean id="tbCountryCntDayService" class="com.jyyr.service.impl.TbCountryCntDayServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+	<!-- 区县负责人大类积分日统计 --> 
+	<bean id="tbCountryCountsMonthService" class="com.jyyr.service.impl.TbCountryCountsMonthServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+    <!-- 区县负责人一年每月折线图 --> 
+	<bean id="tbCountyStaticMonthService" class="com.jyyr.service.impl.TbCountyStaticMonthServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+    <!-- 区县负责人一统计前十名-->  
+	<bean id="tbCountryTopDayService" class="com.jyyr.service.impl.TbCountryTopDayServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+	<!-- 区县负责人一统计后十名-->  
+	<bean id="tbCountryChnlDescDayService" class="com.jyyr.service.impl.TbCountryChnlDescDayServiceImpl">
+		<property name="dao" ref="dao"/>
+	</bean>
+	
+<!-- 结束配置业务层 -->
+	
+<!-- 开始配置控制层 -->	
+	<!--  渠道经理日统计    reckonPieceAction -->
+	<bean id="reckonPieceAction" class="com.jyyr.strtus.action.ReckonPieceAction" scope="prototype">
+		<property name="reckonPayService" ref="tbReckonPiecePayDealInfoDService"/>
+	</bean> 
+	
+     <!--  渠道经理日统计  reckonPieceAction -->
+	<bean id="tbMonthLineChartAction" class="com.jyyr.strtus.action.TbMonthLineChartAction" scope="prototype">
+		<property name="service" ref="tbMonthLineChartService"/>
+	</bean> 
+	
+	<!--  渠道经理日统计  reckonPieceAction --> 
+	<bean id="tbMangerMonthBigClassCountsAction" class="com.jyyr.strtus.action.TbMangerMonthBigClassCountsAction" scope="prototype">
+		<property name="service" ref="tbMangerMonthBigClassCountsService"/>
+		<!--<property name="magerDayCountsService" ref="tbMangerMonthBigClassCountsService"/>-->
+		<property name="reckonPayService" ref="tbReckonPiecePayDealInfoDService"/>
+		<property name="tbMonthLineChart" ref="tbMonthLineChartService"/>
+		<!--<property name="dayCountsDetailService" ref="tbDayCountsDetailService"/>-->
+	</bean> 
+	<!-- 区县负责人    访问地址  --> 
+	<bean id="countyIndexStatiAction" class="com.jyyr.strtus.action.CountyIndexStatiAction" scope="prototype">
+		<property name="service" ref="tbCountryCntDayService"/>
+		<property name="basicInfoMService" ref="tbBasicInfoMService"/>
+		<property name="countyMonthCountsService" ref="tbCountryCountsMonthService"/>
+		<property name="countyStaticMonthService" ref="tbCountyStaticMonthService"/>
+		<property name="countryTopDayService" ref="tbCountryTopDayService"/>
+		<property name="countryChnlDescDayService" ref="tbCountryChnlDescDayService"/>			
+	</bean> 
+	<!-- 访问首页根据权限跳转  --> 
+	<bean id="firstindexAction" class="com.jyyr.strtus.action.IndexAction" scope="prototype">
+		<property name="service" ref="tbBasicInfoMService"/>
+	</bean> 
+<!-- 结束配置控制层 -->	
+</beans>
